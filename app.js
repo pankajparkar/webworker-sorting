@@ -9,10 +9,22 @@ function insertionSort(collection) {
   return collection
 }
 
+function gernerateRandomNumber(count) {
+  var result = []
+  for (var i = 0; i < count; i++) {
+    // TODO: generate whole number instead
+    result.push(Math.random())
+  }
+  return result
+}
+
 window.onload = function () {
   var sortButton = document.getElementById('sort-click')
   sortButton.addEventListener('click', function sortClick(event) {
-    var result = insertionSort([1, 2, 3, 4, 5, 6])
-    document.write('result ' + result)
+    var t0 = performance.now();
+    var collection = gernerateRandomNumber(100000)
+    var result = insertionSort(collection)
+    var t1 = performance.now();
+    document.write('result ' + t0 + '--' + t1)
   })
 }
