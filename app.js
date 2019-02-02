@@ -9,5 +9,10 @@ function insertionSort(collection) {
   return collection
 }
 
-var result = insertionSort([1, 2, 3, 4, 5, 6])
-document.write('result ' + result)
+window.onload = function () {
+  var sortButton = document.getElementById('sort-click')
+  sortButton.addEventListener('click', function sortClick(event) {
+    var result = insertionSort([1, 2, 3, 4, 5, 6])
+    document.write('result ' + result)
+  })
+}
