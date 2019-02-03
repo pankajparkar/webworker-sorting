@@ -1,30 +1,18 @@
-function insertionSort(collection) {
-  for (var i = 0; i < collection.length; i++) {
-    let currentValue = collection[i]
-    for (var j = i - 1; j > -1 && collection[j] > currentValue; j--) {
-      collection[j + 1] = collection[j]
-    }
-    collection[j + 1] = currentValue
-  }
-  return collection
-}
+var worker = new Worker('worker.js');
 
-function gernerateRandomNumber(count) {
-  var result = []
-  for (var i = 0; i < count; i++) {
-    // TODO: generate whole number instead
-    result.push(Math.random())
+worker.addEventListener('message', function({ data: {type, values}}) {
+  switch (type) {
+    case 'SORTED':
+      console.log(values)
+      break;
+    default:
+      break;
   }
-  return result
-}
+}, false);
 
 window.onload = function () {
   var sortButton = document.getElementById('sort-click')
   sortButton.addEventListener('click', function sortClick(event) {
-    var t0 = performance.now();
-    var collection = gernerateRandomNumber(100000)
-    var result = insertionSort(collection)
-    var t1 = performance.now();
-    document.write('result ' + t0 + '--' + t1)
+    worker.postMessage({type: 'SORT'});
   })
 }
