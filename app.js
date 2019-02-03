@@ -3,7 +3,10 @@ var worker = new Worker('worker.js');
 worker.addEventListener('message', function({ data: {type, values}}) {
   switch (type) {
     case 'SORTED':
-      console.log(values)
+      var sortButton = document.getElementById('sort-click')
+      var intervalInput = document.getElementById('interval')
+      intervalInput.disabled = false
+      sortButton.disabled = false
       break;
     default:
       break;
@@ -12,7 +15,14 @@ worker.addEventListener('message', function({ data: {type, values}}) {
 
 window.onload = function () {
   var sortButton = document.getElementById('sort-click')
-  sortButton.addEventListener('click', function sortClick(event) {
+  var intervalInput = document.getElementById('interval')
+  sortButton.addEventListener('click', function sortClick() {
     worker.postMessage({type: 'SORT'});
+    intervalInput.disabled = true
+    sortButton.disabled = true
+  })
+  intervalInput.addEventListener('keyup', function intervalKeyup({target: {value}}) {
+    sortButton.disabled = !value
   })
 }
+
