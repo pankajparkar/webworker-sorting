@@ -1,4 +1,4 @@
-var sharedWebWorker = new Worker('shared-web-worker.js?'+Date.now());
+var sharedWebWorker = new Worker('web-worker.js?'+Date.now());
 
 function gernerateRandomNumber(count) {
   var result = []
