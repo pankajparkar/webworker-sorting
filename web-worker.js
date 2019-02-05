@@ -1,8 +1,9 @@
 self._state = {}
 function insertionSort (state) {
   var collection = state.collection,
-    startIndex = state.startIndex
-  outerloop: for (var i = startIndex; i < collection.length; i++) {
+    startIndex = state.startIndex,
+    endIndex = state.endIndex
+  outerloop: for (var i = startIndex; i < endIndex; i++) {
     var currentValue = collection[i]
     for (var j = i - 1; j > -1 && collection[j] > currentValue; j--) {
       collection[j + 1] = collection[j]
@@ -36,7 +37,9 @@ self.addEventListener('message', function ({ data: {state, trigger, value} }) {
     case 'SORTING':
       if (self._state.collection.length > (self._state.startIndex - 1)) {
         self._state.pause = false
-        setTimeout(_ => applySort(self._state), 10)
+        var futureEndIndex = self._state.endIndex + 10000
+        self._state.endIndex = futureEndIndex <= self._state.collection.length ? futureEndIndex: self._state.collection.length
+        applySort(self._state)
       } else {
         self.postMessage({trigger: 'SORTED'})
         console.log('Completed', state)

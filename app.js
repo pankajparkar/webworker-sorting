@@ -1,5 +1,5 @@
 var sharedWebWorker = new Worker('web-worker.js?'+Date.now());
-var sortWebworker = new Worker('sort-web-worker.js?'+Date.now());
+// var sortWebworker = new Worker('sort-web-worker.js?'+Date.now());
 
 var intervalCall;
  
@@ -14,6 +14,7 @@ function gernerateRandomNumber(count) {
 
 state = {
   startIndex: 0,
+  endIndex: 10000,
   collection: gernerateRandomNumber(100000),
   totalTimeTaken: 0,
   pause: false
@@ -35,7 +36,6 @@ window.onload = function () {
   sortButton.addEventListener('click', function sortClick() {
     sharedWebWorker.postMessage({trigger: 'SET_COLLECTION', state: state})
     intervalCall = createIntervalInstance(intervalInput.value)
-    // setTimeout(() => sharedWebWorker.postMessage({trigger: 'SORTING', state: state}))
     sharedWebWorker.postMessage({trigger: 'SORTING', state: state})
     intervalInput.disabled = true
     sortButton.disabled = true
