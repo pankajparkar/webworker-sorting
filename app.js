@@ -31,6 +31,7 @@ window.onload = function () {
       // TODO: send value to webworker
       var randomNumber = Math.random()
       sharedWebWorker.postMessage({trigger: 'INTERVAL', value: randomNumber});
+      console.log(state)
     }, intervalInput.value)
     // setTimeout(() => sharedWebWorker.postMessage({trigger: 'SORTING', state: state}))
     sharedWebWorker.postMessage({trigger: 'SORTING', state: state})
@@ -57,6 +58,7 @@ window.onload = function () {
         var div = document.createElement('div')
         div.innerHTML = 'Till now only '+ state.startIndex + ' element has been started, and time taken '+ state.totalTimeTaken + 'ms'
         status.appendChild(div)
+        setTimeout(() => sharedWebWorker.postMessage({trigger: 'SORTING'}))
         break;
     }
   }, false);

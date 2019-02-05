@@ -8,11 +8,11 @@ function insertionSort (state) {
       collection[j + 1] = collection[j]
     }
     collection[j + 1] = currentValue
-    if (self._state.pause) {
+    if (state.pause) {
       break outerloop
     }
   }
-  self._state.startIndex = ++i
+  state.startIndex = ++i
 }
 
 function setState (state) {
@@ -24,8 +24,8 @@ function applySort(state) {
   insertionSort(state)
   var t1 = performance.now()
   state.totalTimeTaken += t1 - t0
-  // setTimeout(() => self.postMessage({trigger: 'UI', state: state}))
-  self.postMessage({trigger: 'UI', state: state})
+  setTimeout(() => self.postMessage({trigger: 'UI', state: state}), 16.66)
+  //self.postMessage({trigger: 'UI', state: state})
 }
 
 self.addEventListener('message', function ({ data: {state, trigger, value} }) {
@@ -34,22 +34,18 @@ self.addEventListener('message', function ({ data: {state, trigger, value} }) {
       setState(state)
       break
     case 'SORTING':
-      // setTimeout(function () {
-        applySort(self._state)
-        while (state.collection.length >= self._state.startIndex) {
-          self._state.pause = false
-          applySort(self._state)
-        }
+      if (self._state.collection.length > (self._state.startIndex - 1)) {
+        self._state.pause = false
+        setTimeout(_ => applySort(self._state), 10)
+      } else {
         self.postMessage({trigger: 'SORTED'})
         console.log('Completed', state)
-      // })
+      }
       break
     case 'INTERVAL':
       self._state.pause = true
       console.log(self._state)
       if(self._state.collection) self._state.collection.push(value)
       break
-    default:
-      break;
   }
 }, false);
