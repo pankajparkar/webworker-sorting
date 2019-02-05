@@ -14,9 +14,10 @@ function gernerateRandomNumber(count) {
 
 state = {
   startIndex: 0,
-  endIndex: 10000,
+  endIndex: 1000,
   collection: gernerateRandomNumber(100000),
   totalTimeTaken: 0,
+  range: 1000,
   pause: false
 }
 
@@ -34,9 +35,9 @@ window.onload = function () {
     intervalInput = document.getElementById('interval'),
     status = document.getElementById('status')
   sortButton.addEventListener('click', function sortClick() {
-    sharedWebWorker.postMessage({trigger: 'SET_COLLECTION', state: state})
+    sharedWebWorker.postMessage({trigger: 'SET_STATE', state: state})
+    sharedWebWorker.postMessage({trigger: 'SORT', state: state})
     intervalCall = createIntervalInstance(intervalInput.value)
-    sharedWebWorker.postMessage({trigger: 'SORTING', state: state})
     intervalInput.disabled = true
     sortButton.disabled = true
   })
@@ -44,6 +45,12 @@ window.onload = function () {
   intervalInput.addEventListener('keyup', function intervalKeyup({target: {value}}) {
     sortButton.disabled = !value
   })
+
+  function addLog (state) {
+    var li = document.createElement('li')
+    li.innerHTML = 'Till now only '+ state.startIndex + ' element has been started, and time taken '+ state.totalTimeTaken + 'ms'
+    status.appendChild(li)
+  }
 
   sharedWebWorker.addEventListener('message', function({ data: {trigger, state}}) {
     switch (trigger) {
@@ -55,12 +62,12 @@ window.onload = function () {
         clearInterval(intervalCall)
         intervalCall = null
         break;
-      case 'UI':
+      case 'LOGS':
         console.log('state on ui', state)
-        var div = document.createElement('div')
-        div.innerHTML = 'Till now only '+ state.startIndex + ' element has been started, and time taken '+ state.totalTimeTaken + 'ms'
-        status.appendChild(div)
-        setTimeout(() => sharedWebWorker.postMessage({trigger: 'SORTING'}))
+        addLog(state)
+        break;
+      case 'SORTING':
+        sharedWebWorker.postMessage({trigger: 'SORTING'})
         break;
     }
   }, false);
