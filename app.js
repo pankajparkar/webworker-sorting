@@ -1,5 +1,8 @@
 var sharedWebWorker = new Worker('web-worker.js?'+Date.now());
+var sortWebworker = new Worker('sort-web-worker.js?'+Date.now());
 
+var intervalCall;
+ 
 function gernerateRandomNumber(count) {
   var result = []
   for (var i = 0; i < count; i++) {
@@ -16,23 +19,22 @@ state = {
   pause: false
 }
 
-function createIntervalInstance (fn, timer) {
-  return setInterval(fn, timer)
+function createIntervalInstance (timer) {
+  return setInterval(() => {
+    // TODO: send value to webworker
+    var randomNumber = Math.random()
+    sharedWebWorker.postMessage({trigger: 'INTERVAL', value: randomNumber});
+    console.log(state)
+  }, timer)
 }
 
 window.onload = function () {
   var sortButton = document.getElementById('sort-click'),
     intervalInput = document.getElementById('interval'),
-    status = document.getElementById('status'),
-    intervalCall;
+    status = document.getElementById('status')
   sortButton.addEventListener('click', function sortClick() {
     sharedWebWorker.postMessage({trigger: 'SET_COLLECTION', state: state})
-    intervalCall = createIntervalInstance(() => {
-      // TODO: send value to webworker
-      var randomNumber = Math.random()
-      sharedWebWorker.postMessage({trigger: 'INTERVAL', value: randomNumber});
-      console.log(state)
-    }, intervalInput.value)
+    intervalCall = createIntervalInstance(intervalInput.value)
     // setTimeout(() => sharedWebWorker.postMessage({trigger: 'SORTING', state: state}))
     sharedWebWorker.postMessage({trigger: 'SORTING', state: state})
     intervalInput.disabled = true
