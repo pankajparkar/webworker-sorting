@@ -49,7 +49,7 @@ function performSort (state) {
       clearInterval(sort)
       addLogAndContinueSorting(state)
     }
-  }, 3)
+  }, 5)
 }
 
 self.addEventListener('message', function ({ data: { state, trigger, value } }) {
