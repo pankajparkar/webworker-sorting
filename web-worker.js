@@ -13,6 +13,7 @@ function insertionSort(state) {
       break outerloop
     }
   }
+  state.startIndex = i
 }
 
 function setState(state) {
@@ -33,9 +34,22 @@ function addLogAndContinueSorting (state) {
 
 function calculateStartAndEndIndex (state) {
   state.startIndex = state.endIndex
-  var futureEndIndex = state.endIndex + state.range
+  var futureEndIndex = state.endIndex + 500
   state.endIndex = futureEndIndex <= state.collection.length ? futureEndIndex : state.collection.length
   return state
+}
+
+function performSort (state) {
+  var sort = setInterval(function () {
+    if (!state.pause) {
+      applySort(state)
+      calculateStartAndEndIndex(state)
+    } else {
+      // Calculate range in intial period
+      clearInterval(sort)
+      addLogAndContinueSorting(state)
+    }
+  }, 3)
 }
 
 self.addEventListener('message', function ({ data: { state, trigger, value } }) {
@@ -45,27 +59,12 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
       break
     // For first sort, `SORT` event will get fired
     case 'SORT':
-      // On first sort calculating all the probable range and in later sort,
-      // changing the range of start and end index accordingly.
-      // This approach helps the web-worker thread to listen from UI thread.
-      var firstSortEvent = setInterval(function () {
-        if (!self._state.pause) {
-          applySort(self._state)
-          calculateStartAndEndIndex(self._state)
-        } else {
-          // Calculate range in intial period
-          self._state.range = self._state.startIndex - 1
-          clearInterval(firstSortEvent)
-          addLogAndContinueSorting(self._state)
-        }
-      }, 100)
+      performSort(self._state)
       break
     case 'SORTING':
-      if (self._state.collection.length > (self._state.startIndex)) {
+      if (self._state.collection.length > self._state.startIndex + 1) {
         self._state.pause = false
-        calculateStartAndEndIndex(self._state)
-        applySort(self._state)
-        addLogAndContinueSorting(self._state)
+        performSort(self._state)
       } else {
         self.postMessage({ trigger: 'LOGS', state: self._state })
         self.postMessage({ trigger: 'SORTED', state: self._state })

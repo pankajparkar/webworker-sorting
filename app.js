@@ -14,10 +14,9 @@ function gernerateRandomNumber(count) {
 
 state = {
   startIndex: 0,
-  endIndex: 1000,
+  endIndex: 20000,
   collection: gernerateRandomNumber(100000),
   totalTimeTaken: 0,
-  range: 1000,
   pause: false
 }
 
