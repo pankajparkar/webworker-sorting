@@ -13,7 +13,6 @@ function insertionSort(state) {
       break outerloop
     }
   }
-  state.startIndex = ++i
 }
 
 function setState(state) {
@@ -32,6 +31,13 @@ function addLogAndContinueSorting (state) {
   self.postMessage({ trigger: 'SORTING', state: state })
 }
 
+function calculateStartAndEndIndex (state) {
+  state.startIndex = state.endIndex
+  var futureEndIndex = state.endIndex + state.range
+  state.endIndex = futureEndIndex <= state.collection.length ? futureEndIndex : state.collection.length
+  return state
+}
+
 self.addEventListener('message', function ({ data: { state, trigger, value } }) {
   switch (trigger) {
     case 'SET_STATE':
@@ -42,8 +48,7 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
       var firstSortEvent = setInterval(function () {
         if (!self._state.pause) {
           applySort(self._state)
-          var futureEndIndex = self._state.endIndex + 1000
-          self._state.endIndex = futureEndIndex
+          calculateStartAndEndIndex(self._state)
         } else {
           // Calculate range in intial period
           self._state.range = self._state.startIndex - 1
@@ -53,21 +58,18 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
       }, 100)
       break
     case 'SORTING':
-      if (self._state.collection.length > (self._state.startIndex - 1)) {
+      if (self._state.collection.length > (self._state.startIndex)) {
         self._state.pause = false
-        var futureEndIndex = self._state.endIndex + self._state.range
-        self._state.endIndex = futureEndIndex <= self._state.collection.length ? futureEndIndex : self._state.collection.length
+        calculateStartAndEndIndex(self._state)
         applySort(self._state)
         addLogAndContinueSorting(self._state)
       } else {
         self.postMessage({ trigger: 'LOGS', state: self._state })
-        self.postMessage({ trigger: 'SORTED' })
-        console.log('Completed', state)
+        self.postMessage({ trigger: 'SORTED', state: self._state })
       }
       break
     case 'INTERVAL':
       self._state.pause = true
-      console.log(self._state)
       if (self._state.collection) self._state.collection.push(value)
       break
   }

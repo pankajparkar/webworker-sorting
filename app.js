@@ -26,7 +26,6 @@ function createIntervalInstance (timer) {
     // TODO: send value to webworker
     var randomNumber = Math.random()
     sharedWebWorker.postMessage({trigger: 'INTERVAL', value: randomNumber});
-    console.log(state)
   }, timer)
 }
 
@@ -61,9 +60,9 @@ window.onload = function () {
         sortButton.disabled = false
         clearInterval(intervalCall)
         intervalCall = null
+        alert('Sorting completed within '+ state.totalTimeTaken + ' ms')
         break;
       case 'LOGS':
-        console.log('state on ui', state)
         addLog(state)
         break;
       case 'SORTING':
