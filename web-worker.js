@@ -45,6 +45,9 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
       break
     // For first sort, `SORT` event will get fired
     case 'SORT':
+      // On first sort calculating all the probable range and in later sort,
+      // changing the range of start and end index accordingly.
+      // This approach helps the web-worker thread to listen from UI thread.
       var firstSortEvent = setInterval(function () {
         if (!self._state.pause) {
           applySort(self._state)
@@ -70,7 +73,7 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
       break
     case 'INTERVAL':
       self._state.pause = true
-      if (self._state.collection) self._state.collection.push(value)
+      self._state.collection.push(value)
       break
   }
 }, false);
