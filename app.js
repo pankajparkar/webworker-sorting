@@ -47,6 +47,7 @@ window.onload = function () {
 
   function addLog (state) {
     var li = document.createElement('li')
+    li.className = 'list-group-item'
     li.innerHTML = 'Till now only '+ state.startIndex + ' element has been started, and time taken '+ state.totalTimeTaken + 'ms'
     status.appendChild(li)
   }
