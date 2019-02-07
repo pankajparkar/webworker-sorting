@@ -29,7 +29,7 @@ function applySort(state) {
 
 function calculateStartAndEndIndex(state) {
   state.startIndex = state.endIndex
-  var futureEndIndex = state.endIndex + 1000
+  var futureEndIndex = state.endIndex + 100
   state.endIndex = futureEndIndex <= state.collection.length ? futureEndIndex : state.collection.length
   return state
 }
@@ -49,7 +49,7 @@ function sorting(state) {
       clearInterval(sort)
       self.postMessage({ trigger: 'SORTED', message: `Time taken to complete sorting is ${state.totalTimeTaken} ms`, state })
     }
-  }, 5)
+  }, 2)
 }
 
 self.addEventListener('message', function ({ data: { state, trigger, value } }) {
@@ -61,11 +61,9 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
       sorting(self._state)
       break
     case 'INTERVAL':
-      var t0 = performance.now();
       self._state.pause = true
       self._state.collection.push(value)
-      var t1 = performance.now()
-      self.postMessage({ trigger: 'LOGS', message: `Time taken to process message ${(t1 - t0)} ms` })
+      self.postMessage({ trigger: 'MESSAGE_PROCESSED', state: state, value: value })
       break
   }
 }, false);
