@@ -17,7 +17,6 @@
   "bugs": {
     "url": "https://github.com/pankajparkar/webworker-sorting/issues"
   },
-  "homepage": "https://github.com/pankajparkar/webworker-sorting#readme",
   "dependencies": {},
   "devDependencies": {
     "gh-pages": "^2.0.1",
