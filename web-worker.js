@@ -13,7 +13,7 @@ function insertionSort(state) {
       break outerloop
     }
   }
-  state.startIndex = i
+  state.startIndex = i++
 }
 
 function setState(state) {
@@ -24,30 +24,31 @@ function applySort(state) {
   var t0 = performance.now();
   insertionSort(state)
   var t1 = performance.now()
-  state.totalTimeTaken += t1 - t0
+  self._state.totalTimeTaken += t1 - t0
 }
 
-function addLogAndContinueSorting (state) {
-  self.postMessage({ trigger: 'LOGS', state: state })
-  self.postMessage({ trigger: 'SORTING', state: state })
-}
-
-function calculateStartAndEndIndex (state) {
+function calculateStartAndEndIndex(state) {
   state.startIndex = state.endIndex
   var futureEndIndex = state.endIndex + 500
   state.endIndex = futureEndIndex <= state.collection.length ? futureEndIndex : state.collection.length
   return state
 }
 
-function performSort (state) {
+function sorting(state) {
   var sort = setInterval(function () {
-    if (!state.pause) {
-      applySort(state)
-      calculateStartAndEndIndex(state)
+    if (state.collection.length > state.startIndex + 1) {
+      state.pause = false
+      if (! state.pause) {
+        applySort(state)
+        calculateStartAndEndIndex(state)
+      } else {
+        // Calculate range in intial period
+        clearInterval(sort)
+        sorting(state)
+      }
     } else {
-      // Calculate range in intial period
       clearInterval(sort)
-      addLogAndContinueSorting(state)
+      self.postMessage({ trigger: 'SORTED', message: `Time taken to complete sorting is ${state.totalTimeTaken} ms` })
     }
   }, 5)
 }
@@ -57,22 +58,15 @@ self.addEventListener('message', function ({ data: { state, trigger, value } }) 
     case 'SET_STATE':
       setState(state)
       break
-    // For first sort, `SORT` event will get fired
     case 'SORT':
-      performSort(self._state)
-      break
-    case 'SORTING':
-      if (self._state.collection.length > self._state.startIndex + 1) {
-        self._state.pause = false
-        performSort(self._state)
-      } else {
-        self.postMessage({ trigger: 'LOGS', state: self._state })
-        self.postMessage({ trigger: 'SORTED', state: self._state })
-      }
+      sorting(self._state)
       break
     case 'INTERVAL':
+      var t0 = performance.now();
       self._state.pause = true
       self._state.collection.push(value)
+      var t1 = performance.now()
+      self.postMessage({ trigger: 'LOGS', message: `Time taken to process message ${(t1 - t0)} ms` })
       break
   }
 }, false);
