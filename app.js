@@ -1,7 +1,7 @@
-var sharedWebWorker = new Worker('web-worker.js?'+Date.now());
+var sharedWebWorker = new Worker('web-worker.js?' + Date.now());
 
-var intervalCall, sortedCollection;
- 
+var intervalCall, sortedCollection, intervalDictionary = {};
+
 function gernerateRandomNumber(count) {
   var result = []
   for (var i = 0; i < count; i++) {
@@ -12,15 +12,16 @@ function gernerateRandomNumber(count) {
 
 state = {
   startIndex: 0,
-  endIndex: 1000,
+  endIndex: 500,
   collection: gernerateRandomNumber(100000),
   totalTimeTaken: 0
 }
 
-function createIntervalInstance (timer) {
+function createIntervalInstance(timer) {
   return setInterval(() => {
     var randomNumber = Math.random()
-    sharedWebWorker.postMessage({trigger: 'INTERVAL', value: randomNumber});
+    sharedWebWorker.postMessage({ trigger: 'INTERVAL', value: randomNumber });
+    intervalDictionary[randomNumber] = { starTime: performance.now() }
   }, timer)
 }
 
@@ -30,8 +31,8 @@ window.onload = function () {
     stopTimerButton = document.getElementById('stop-timer'),
     status = document.getElementById('status')
   sortButton.addEventListener('click', function sortClick() {
-    sharedWebWorker.postMessage({trigger: 'SET_STATE', state: state})
-    sharedWebWorker.postMessage({trigger: 'SORT', state: state})
+    sharedWebWorker.postMessage({ trigger: 'SET_STATE', state: state })
+    sharedWebWorker.postMessage({ trigger: 'SORT', state: state })
     intervalCall = createIntervalInstance(intervalInput.value)
     stopTimerButton.disabled = false
     intervalInput.disabled = true
@@ -39,7 +40,7 @@ window.onload = function () {
   })
 
   stopTimerButton.addEventListener('click', function () {
-    if (intervalCall){
+    if (intervalCall) {
       clearInterval(intervalCall)
       intervalCall = null
       stopTimerButton.disabled = true
@@ -47,11 +48,11 @@ window.onload = function () {
     }
   })
 
-  intervalInput.addEventListener('keyup', function intervalKeyup({target: {value}}) {
+  intervalInput.addEventListener('keyup', function intervalKeyup({ target: { value } }) {
     sortButton.disabled = !value
   })
 
-  function addLog (message, className) {
+  function addLog(message, className) {
     var li = document.createElement('li')
     li.className = (className || 'list-group-item') + ' ' + 'highlight'
     li.innerHTML = message
@@ -59,20 +60,24 @@ window.onload = function () {
     status.scrollTop = status.scrollHeight;
   }
 
-  sharedWebWorker.addEventListener('message', function({ data: {trigger, message, state}}) {
+  sharedWebWorker.addEventListener('message', function ({ data: { trigger, message, state, value } }) {
     switch (trigger) {
       case 'SORTED':
         var sortButton = document.getElementById('sort-click')
         var intervalInput = document.getElementById('interval')
         intervalInput.disabled = false
         sortButton.disabled = false
-        if (intervalCall){
+        if (intervalCall) {
           clearInterval(intervalCall)
           intervalCall = null
           stopTimerButton.disabled = true
         }
         window.sortedCollection = state.collection
         addLog(message, 'alert alert-success')
+        break;
+      case 'MESSAGE_PROCESSED':
+        var message = `Time taken to process message ${performance.now() - intervalDictionary[value].starTime} ms`
+        addLog(message)
         break;
       case 'LOGS':
         addLog(message)
