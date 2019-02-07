@@ -1,6 +1,6 @@
 var sharedWebWorker = new Worker('web-worker.js?'+Date.now());
 
-var intervalCall;
+var intervalCall, sortedCollection;
  
 function gernerateRandomNumber(count) {
   var result = []
@@ -19,7 +19,6 @@ state = {
 
 function createIntervalInstance (timer) {
   return setInterval(() => {
-    // TODO: send value to webworker
     var randomNumber = Math.random()
     sharedWebWorker.postMessage({trigger: 'INTERVAL', value: randomNumber});
   }, timer)
@@ -52,11 +51,12 @@ window.onload = function () {
     sortButton.disabled = !value
   })
 
-  function addLog (message) {
+  function addLog (message, className) {
     var li = document.createElement('li')
-    li.className = 'list-group-item'
+    li.className = (className || 'list-group-item') + ' ' + 'highlight'
     li.innerHTML = message
     status.appendChild(li)
+    status.scrollTop = status.scrollHeight;
   }
 
   sharedWebWorker.addEventListener('message', function({ data: {trigger, message, state}}) {
@@ -71,14 +71,12 @@ window.onload = function () {
           intervalCall = null
           stopTimerButton.disabled = true
         }
-        addLog(message)
+        window.sortedCollection = state.collection
+        addLog(message, 'alert alert-success')
         break;
       case 'LOGS':
         addLog(message)
         break;
-      // case 'SORTING':
-      //   sharedWebWorker.postMessage({trigger: 'SORTING'})
-      //   break;
     }
   }, false);
 }

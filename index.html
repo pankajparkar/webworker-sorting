@@ -7,6 +7,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
   <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet"> -->
+  <style>
+    @keyframes highlight {
+    0% {
+        background: #ffff99; 
+    }
+    100% {
+        background: none;
+    }
+}
+
+.highlight {
+    animation: highlight 2s;
+}
+</style>
 </head>
 
 <body>
@@ -27,7 +41,7 @@
   <div class="container">
     <div class="alert alert-info" role="alert">
       <b>Heads up!</b> Set time in milliseconds inside a below textbox, that will intimate sorting algorithm,
-      and to share its current status and randomly generated number will be added to the collection. 
+      and to share its current status and randomly generated number will be added to the collection.
     </div>
     <div class="row">
       <div class="col-sm-4">

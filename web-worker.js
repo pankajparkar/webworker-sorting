@@ -29,7 +29,7 @@ function applySort(state) {
 
 function calculateStartAndEndIndex(state) {
   state.startIndex = state.endIndex
-  var futureEndIndex = state.endIndex + 500
+  var futureEndIndex = state.endIndex + 1000
   state.endIndex = futureEndIndex <= state.collection.length ? futureEndIndex : state.collection.length
   return state
 }
@@ -42,13 +42,12 @@ function sorting(state) {
         applySort(state)
         calculateStartAndEndIndex(state)
       } else {
-        // Calculate range in intial period
         clearInterval(sort)
         sorting(state)
       }
     } else {
       clearInterval(sort)
-      self.postMessage({ trigger: 'SORTED', message: `Time taken to complete sorting is ${state.totalTimeTaken} ms` })
+      self.postMessage({ trigger: 'SORTED', message: `Time taken to complete sorting is ${state.totalTimeTaken} ms`, state })
     }
   }, 5)
 }
