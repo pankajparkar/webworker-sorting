@@ -1,0 +1,26 @@
+{
+  "name": "webworker-sorting",
+  "version": "1.0.0",
+  "description": "Web Worker Sorting",
+  "homepage": "https://pankajparkar.github.io/webworker-sorting/",
+  "main": "index.js",
+  "scripts": {
+    "http-server": "http-server",
+    "start": "npm run http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pankajparkar/webworker-sorting.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pankajparkar/webworker-sorting/issues"
+  },
+  "homepage": "https://github.com/pankajparkar/webworker-sorting#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "gh-pages": "^2.0.1",
+    "http-server": "^0.11.1"
+  }
+}
