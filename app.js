@@ -25,28 +25,32 @@ function createIntervalInstance(timer) {
   }, timer)
 }
 
+function sortClick() {
+  sharedWebWorker.postMessage({ trigger: 'SET_STATE', state: state })
+  sharedWebWorker.postMessage({ trigger: 'SORT', state: state })
+  intervalCall = createIntervalInstance(intervalInput.value)
+  stopTimerButton.disabled = false
+  intervalInput.disabled = true
+  sortButton.disabled = true
+}
+
 window.onload = function () {
   var sortButton = document.getElementById('sort-click'),
     intervalInput = document.getElementById('interval'),
     stopTimerButton = document.getElementById('stop-timer'),
     status = document.getElementById('status')
-  sortButton.addEventListener('click', function sortClick() {
-    sharedWebWorker.postMessage({ trigger: 'SET_STATE', state: state })
-    sharedWebWorker.postMessage({ trigger: 'SORT', state: state })
-    intervalCall = createIntervalInstance(intervalInput.value)
-    stopTimerButton.disabled = false
-    intervalInput.disabled = true
-    sortButton.disabled = true
-  })
+  sortButton.addEventListener('click', sortClick)
 
-  stopTimerButton.addEventListener('click', function () {
+  function stopTimer () {
     if (intervalCall) {
       clearInterval(intervalCall)
       intervalCall = null
       stopTimerButton.disabled = true
       state.pause = false
     }
-  })
+  } 
+
+  stopTimerButton.addEventListener('click', stopTimer)
 
   intervalInput.addEventListener('keyup', function intervalKeyup({ target: { value } }) {
     sortButton.disabled = !value
@@ -67,11 +71,7 @@ window.onload = function () {
         var intervalInput = document.getElementById('interval')
         intervalInput.disabled = false
         sortButton.disabled = false
-        if (intervalCall) {
-          clearInterval(intervalCall)
-          intervalCall = null
-          stopTimerButton.disabled = true
-        }
+        stopTimer();
         window.sortedCollection = state.collection
         addLog(message, 'alert alert-success')
         break;
