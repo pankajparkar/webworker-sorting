@@ -16,7 +16,7 @@ function insertionSort(state) {
       break outerloop
     }
   }
-  state.startIndex = i;
+  state.startIndex = state.pause ? i: i++;
 }
 
 function setState(state) {
