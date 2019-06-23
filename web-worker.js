@@ -7,13 +7,16 @@ function insertionSort(state) {
     var currentValue = collection[i]
     for (var j = i - 1; j > -1 && collection[j] > currentValue; j--) {
       collection[j + 1] = collection[j]
+      if (state.pause) {
+        break outerloop
+      }
     }
     collection[j + 1] = currentValue
     if (state.pause) {
       break outerloop
     }
   }
-  state.startIndex = i++
+  state.startIndex = i;
 }
 
 function setState(state) {

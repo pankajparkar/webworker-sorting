@@ -26,6 +26,9 @@ function createIntervalInstance(timer) {
 }
 
 function sortClick() {
+  var sortButton = document.getElementById('sort-click'),
+    intervalInput = document.getElementById('interval'),
+    stopTimerButton = document.getElementById('stop-timer');
   sharedWebWorker.postMessage({ trigger: 'SET_STATE', state: state })
   sharedWebWorker.postMessage({ trigger: 'SORT', state: state })
   intervalCall = createIntervalInstance(intervalInput.value)
